@@ -1,59 +1,44 @@
 {
-    order jwt_generate before respond
+	order jwt_generate before respond
 }
 
 # Simple example setting the token in a response header
-:8080 {
-    # Generate a JWT token and set it as a header
-    jwt_generate {
-        secret_key "your-super-secret-key-change-me"
-        algorithm HS256
-        expiration 3600
-        issuer "caddy-jwt-generator"
-        audience "api-clients"
-        header_name "X-JWT-Token"
-        claim user_id "123"
-        claim role "admin"
-    }
+:8080/header {
+	# Generate a JWT token and set it as a header
+	jwt_generate {
+		secret_key "your-super-secret-key-change-me"
+		algorithm HS256
+		expiration 3600
+		issuer "caddy-jwt-generator"
+		audience "api-clients"
+		header_name "X-JWT-Token"
+		claim user_id "123"
+		claim role "admin"
+	}
 
-    # Return a simple response
-    respond "JWT token has been generated and included in the response headers"
+	# Return a simple response
+	respond "JWT token has been generated and included in the response headers"
 }
 
-# Example of using with templates
-:8080/api/token/templates {
-    jwt_generate {
-        secret_key "your-super-secret-key-change-me"
-        algorithm HS256
-        expiration 3600
-        issuer "caddy-jwt-generator"
-        audience "api-clients"
-        header_name "X-JWT-Token"
-        placeholder_name "{error_token}"
-        claim user_id "123"
-        claim email "user@example.com"
-        claim roles "admin,user"
-    }
-    
-    # Enable templates
-    templates {
-        mime text/plain
-    }
-    
-    # This handler will be executed after jwt_generate
-    respond `
-JWT Token Information:
-=====================
-Token has been set in header: {{.Res.Header.Get "X-JWT-Token"}}
-Token variable: {error_token}
+# Example of using with templates and placeholder
+:8080/placeholder {
+	jwt_generate {
+		secret_key "your-super-secret-key-change-me"
+		algorithm HS256
+		expiration 3600
+		issuer "caddy-jwt-generator"
+		audience "api-clients"
+		placeholder_name "error_token"
+		claim user_id "123"
+		claim email "user@example.com"
+		claim roles "admin,user"
+	}
 
-JWT Claims:
-- User ID: {{index (splitList "." (index (splitList "." (.Res.Header.Get "X-JWT-Token")) 1) | first | base64Decode | js) "user_id"}}
-- Email: {{index (splitList "." (index (splitList "." (.Res.Header.Get "X-JWT-Token")) 1) | first | base64Decode | js) "email"}}
-- Roles: {{index (splitList "." (index (splitList "." (.Res.Header.Get "X-JWT-Token")) 1) | first | base64Decode | js) "roles"}}
-- Issuer: {{index (splitList "." (index (splitList "." (.Res.Header.Get "X-JWT-Token")) 1) | first | base64Decode | js) "iss"}}
-- Expiration: {{index (splitList "." (index (splitList "." (.Res.Header.Get "X-JWT-Token")) 1) | first | base64Decode | js) "exp"}}
+	# Enable templates
+	templates {
+		mime text/plain
+	}
 
-This demonstrates using both header_name and placeholder_name to access the token.
-`
+	# This handler will be executed after jwt_generate
+	respond `Token variable: {error_token}`
 }
