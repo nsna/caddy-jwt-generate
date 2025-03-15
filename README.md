@@ -94,6 +94,8 @@ xcaddy build --with github.com/nsna/caddy-jwt-generate@latest
 | `placeholder_name` | The name of the placeholder which will store the generated token |  |
 | `claim` | Additional claims to include in the JWT |  |
 
+Currently, the only supported algorithms are "HS256", "HS384", and "HS512".
+
 Either `header_name`, or `placeholder_name`, (or both) is required to output the token from the plugin.
 
 ## Examples
