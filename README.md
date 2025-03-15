@@ -13,7 +13,7 @@ To use this plugin, you need to build Caddy with this plugin included. The easie
 
 ```bash
 go mod tidy
-xcaddy build --with github.com/nsna/caddy-jwt-generate
+xcaddy build --with github.com/nsna/caddy-jwt-generate@latest
 ```
 
 ## Usage

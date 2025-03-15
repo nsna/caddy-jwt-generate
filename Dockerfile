@@ -10,11 +10,11 @@ RUN go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
 WORKDIR /build
 
 # Copy module files
-#COPY go.mod .
-#COPY plugin.go .
+COPY go.mod .
+COPY plugin.go .
 
 # Build Caddy with the plugin
-RUN xcaddy build --with github.com/nsna/caddy-jwt-generate
+RUN xcaddy build --with github.com/nsna/caddy-jwt-generate=.
 
 # Final stage
 FROM alpine:latest
